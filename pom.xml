@@ -20,14 +20,9 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
 
     <!--引入项目依赖的jar包 -->
+
     <!-- MBG -->
     <!-- https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core -->
     <dependency>
@@ -50,6 +45,14 @@
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
+          <version>4.3.7.RELEASE</version>
+      </dependency>
+
+      <!--Spring-test -->
+      <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
           <version>4.3.7.RELEASE</version>
       </dependency>
 
@@ -90,7 +93,7 @@
       <version>5.1.41</version>
     </dependency>
 
-    <!-- （jstl，servlet-api） -->
+    <!-- （jstl，servlet-api, junit） -->
     <!-- https://mvnrepository.com/artifact/jstl/jstl -->
     <dependency>
       <groupId>jstl</groupId>
@@ -105,6 +108,14 @@
       <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
+
+      <!-- junit -->
+      <!-- https://mvnrepository.com/artifact/junit/junit -->
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.12</version>
+      </dependency>
 
 
   </dependencies>
