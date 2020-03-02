@@ -46,7 +46,7 @@
                         <th>deptName</th>
                         <th>操作</th>
                     </tr>
-                    <c:forEach items="${pageInfo.list }" var="emp">
+                    <c:forEach items="${pageInfo.list}" var="emp">
                         <tr>
                             <th>${emp.empId }</th>
                             <th>${emp.empName }</th>
