@@ -19,6 +19,61 @@
 
 </head>
 <body>
+
+<!-- 员工添加的模态框 -->
+<div class="modal fade" id="empAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">员工添加</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">empName</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="empName" class="form-control" id="empName_add_input" placeholder="empName">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="email" class="form-control" id="email_add_input" placeholder="email@yzx.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">gender</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender1_add_input" value="M" checked="checked"> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender2_add_input" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">deptName</label>
+                        <div class="col-sm-4">
+                            <!-- 部门提交部门id即可 -->
+                            <select class="form-control" name="dId">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- 搭建显示页面 -->
 <div class="container">
     <!-- 标题 -->
@@ -68,9 +123,14 @@
 <script type="text/javascript">
     //1、页面加载完成以后，直接去发送ajax请求,要到分页数据
     $(function(){
+        //去首页
+        to_page(1);
+    });
+
+    function to_page(pn){
         $.ajax({
             url:"${APP_PATH}/emps",
-            data:"pn=1",
+            data:"pn="+pn,
             type:"GET",
             success:function(result){
                 //console.log(result);
@@ -82,8 +142,11 @@
                 build_page_nav(result);
             }
         });
-    });
+    }
+
     function build_emps_table(result){
+        //清空table表格
+        $("#emps_table tbody").empty();
         var emps = result.extend.pageInfo.list;
         $.each(emps,function(index,item){
             // alert(item.empName);
@@ -112,6 +175,7 @@
     }
     //解析显示分页信息
     function build_page_info(result){
+        $("#page_info_area").empty();
         $("#page_info_area").append("当前"+result.extend.pageInfo.pageNum+"页,总"+
             result.extend.pageInfo.pages+"页,总"+
             result.extend.pageInfo.total+"条记录");
@@ -119,17 +183,50 @@
     }
     //解析显示分页条，点击分页要能去下一页....
     function build_page_nav(result){
+        //page_nav_area
+        $("#page_nav_area").empty();
         var ul = $("<ul></ul>").addClass("pagination");
         //构建元素
         var firstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href","#"));
         var prePageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+        if(result.extend.pageInfo.hasPreviousPage == false){
+            firstPageLi.addClass("disabled");
+            prePageLi.addClass("disabled");
+        }else{
+            //为元素添加点击翻页的事件
+            firstPageLi.click(function(){
+                to_page(1);
+            });
+            prePageLi.click(function(){
+                to_page(result.extend.pageInfo.pageNum -1);
+            });
+        }
+
+
         var nextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
         var lastPageLi = $("<li></li>").append($("<a></a>").append("末页").attr("href","#"));
+        if(result.extend.pageInfo.hasNextPage == false){
+            nextPageLi.addClass("disabled");
+            lastPageLi.addClass("disabled");
+        }else{
+            nextPageLi.click(function(){
+                to_page(result.extend.pageInfo.pageNum +1);
+            });
+            lastPageLi.click(function(){
+                to_page(result.extend.pageInfo.pages);
+            });
+        }
         //添加首页和前一页 的提示
         ul.append(firstPageLi).append(prePageLi);
         //1,2，3遍历给ul中添加页码提示
         $.each(result.extend.pageInfo.navigatepageNums,function(index,item){
             var numLi = $("<li></li>").append($("<a></a>").append(item));
+            if(result.extend.pageInfo.pageNum == item){
+                numLi.addClass("active");
+            }
+            numLi.click(function(){
+                to_page(item);
+            });
             ul.append(numLi);
         });
         //添加下一页和末页 的提示
@@ -140,7 +237,13 @@
         navEle.appendTo("#page_nav_area");
     }
 
-
+    //点击新增按钮弹出模态框。
+    $("#emp_add_modal_btn").click(function(){
+        //弹出模态框
+        $("#empAddModal").modal({
+            backdrop:"static"
+        });
+    });
 </script>
 </body>
 </html>
