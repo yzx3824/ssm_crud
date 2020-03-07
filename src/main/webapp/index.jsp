@@ -121,6 +121,8 @@
     </div>
 </div>
 <script type="text/javascript">
+
+    var totalRecord,currentPage;
     //1、页面加载完成以后，直接去发送ajax请求,要到分页数据
     $(function(){
         //去首页
@@ -179,6 +181,7 @@
         $("#page_info_area").append("当前"+result.extend.pageInfo.pageNum+"页,总"+
             result.extend.pageInfo.pages+"页,总"+
             result.extend.pageInfo.total+"条记录");
+        totalRecord = result.extend.pageInfo.total;
 
     }
     //解析显示分页条，点击分页要能去下一页....
@@ -239,9 +242,53 @@
 
     //点击新增按钮弹出模态框。
     $("#emp_add_modal_btn").click(function(){
+        //发送ajax请求，查出部门信息，显示在下拉列表中
+        getDepts("#empAddModal select");
+
         //弹出模态框
         $("#empAddModal").modal({
             backdrop:"static"
+        });
+    });
+
+    //查出所有的部门信息并显示在下拉列表中
+    function getDepts(ele){
+        $.ajax({
+            url:"${APP_PATH}/depts",
+            type:"GET",
+            success:function(result){
+                //{"code":100,"msg":"处理成功！",
+                //"extend":{"depts":[{"deptId":1,"deptName":"开发部"},{"deptId":2,"deptName":"测试部"}]}}
+                //console.log(result);
+                //显示部门信息在下拉列表中
+                //$("#empAddModal select").append("")
+                $.each(result.extend.depts,function(){
+                    var optionEle = $("<option></option>").append(this.deptName).attr("value",this.deptId);
+                    optionEle.appendTo(ele);
+                });
+            }
+        });
+    }
+
+    //点击保存，保存员工。
+    $("#emp_save_btn").click(function(){
+        //1、模态框中填写的表单数据提交给服务器进行保存
+        //2、发送ajax请求保存员工
+        //alert($("#empAddModal form").serialize());
+        $.ajax({
+            url:"${APP_PATH}/emp",
+            type:"POST",
+            data:$("#empAddModal form").serialize(),
+            success:function(result){
+                //alert(result.msg);
+                //员工保存成功；
+                //1、关闭模态框
+                $("#empAddModal").modal('hide');
+
+                //2、来到最后一页，显示刚才保存的数据
+                //发送ajax请求显示最后一页数据即可,这里跳转到总记录数，总记录数肯定是大于等于页码数
+                to_page(totalRecord);
+            }
         });
     });
 </script>
